@@ -10,7 +10,7 @@ const LibrarySong = ({
   setCurrentSong,
   songs,
   audioRef,
-  isPlaying,
+  setIsPlaying,
   setSongs,
   active,
 }) => {
@@ -34,7 +34,8 @@ const LibrarySong = ({
     setSongs(newSongs);
 
     //Play audio
-    playAudio(isPlaying, audioRef);
+    setIsPlaying(true);
+    playAudio(true, audioRef);
   };
   return (
     <div
