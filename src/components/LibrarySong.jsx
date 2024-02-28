@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable react/prop-types */
+
 import { playAudio } from "../util";
 
 const LibrarySong = ({
