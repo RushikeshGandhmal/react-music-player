@@ -15,7 +15,7 @@ function App() {
   const audioRef = useRef(null);
 
   const [songs, setSongs] = useState(chillhop());
-  const [currentSong, setCurrentSong] = useState(songs[0]);
+  const [currentSong, setCurrentSong] = useState([songs[0]]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [songInfo, setSongInfo] = useState({
     currentTime: 0,
@@ -42,7 +42,7 @@ function App() {
   };
 
   const songEndHandler = async () => {
-    let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
+    let currentIndex = songs.findIndex((song) => song.id === currentSong[0].id);
     await setCurrentSong(songs[(currentIndex + 1) % songs.length]);
     playAudio(isPlaying, audioRef);
     return;
@@ -50,7 +50,9 @@ function App() {
 
   const songSelectHandler = (id) => {
     const selectedSong = songs.filter((state) => state.id === id);
-    setCurrentSong({ ...selectedSong[0] });
+    setCurrentSong([{ ...selectedSong[0] }, ...currentSong]);
+
+    console.log("currentSong", currentSong);
     //Set Active in library
     const newSongs = songs.map((song) => {
       if (song.id === id) {
@@ -88,17 +90,14 @@ function App() {
     <div className={`App ${libraryStatus ? "library-active" : ""}`}>
       <Nav libraryStatus={libraryStatus} setLibraryStatus={setLibraryStatus} />
       <div id="dropzone" onDrop={handleDrop} onDragOver={handleDragOver}>
-        <Song isPlaying={isPlaying} currentSong={currentSong} />
+        <Song isPlaying={isPlaying} currentSong={currentSong[0]} />
         <Player
           audioRef={audioRef}
           setIsPlaying={setIsPlaying}
-          currentSong={currentSong}
+          currentSong={currentSong[0]}
           isPlaying={isPlaying}
           songInfo={songInfo}
           setSongInfo={setSongInfo}
-          songs={songs}
-          setSongs={setSongs}
-          setCurrentSong={setCurrentSong}
         />
       </div>
       <Library
@@ -107,10 +106,11 @@ function App() {
         songSelectHandler={songSelectHandler}
       />
       <audio
+        key={currentSong[0].id}
         onLoadedMetadata={timeUpdateHandler}
         onTimeUpdate={timeUpdateHandler}
         ref={audioRef}
-        src={currentSong.audio}
+        src={currentSong[0].audio}
         onEnded={songEndHandler}
       ></audio>
     </div>
