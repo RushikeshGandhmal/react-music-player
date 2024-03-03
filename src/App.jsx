@@ -40,34 +40,71 @@ function App() {
       volume: e.target.volume,
     });
   };
+
   const songEndHandler = async () => {
     let currentIndex = songs.findIndex((song) => song.id === currentSong.id);
     await setCurrentSong(songs[(currentIndex + 1) % songs.length]);
     playAudio(isPlaying, audioRef);
     return;
   };
+
+  const songSelectHandler = (id) => {
+    const selectedSong = songs.filter((state) => state.id === id);
+    setCurrentSong({ ...selectedSong[0] });
+    //Set Active in library
+    const newSongs = songs.map((song) => {
+      if (song.id === id) {
+        return {
+          ...song,
+          active: true,
+        };
+      } else {
+        return {
+          ...song,
+          active: false,
+        };
+      }
+    });
+    setSongs(newSongs);
+
+    //Play audio
+    setIsPlaying(true);
+    playAudio(true, audioRef);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData("text/plain");
+
+    songSelectHandler(data);
+    console.log(data);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault(); // Necessary to allow dropping
+  };
+
   return (
     <div className={`App ${libraryStatus ? "library-active" : ""}`}>
       <Nav libraryStatus={libraryStatus} setLibraryStatus={setLibraryStatus} />
-      <Song isPlaying={isPlaying} currentSong={currentSong} />
-      <Player
-        audioRef={audioRef}
-        setIsPlaying={setIsPlaying}
-        currentSong={currentSong}
-        isPlaying={isPlaying}
-        songInfo={songInfo}
-        setSongInfo={setSongInfo}
-        songs={songs}
-        setSongs={setSongs}
-        setCurrentSong={setCurrentSong}
-      />
+      <div id="dropzone" onDrop={handleDrop} onDragOver={handleDragOver}>
+        <Song isPlaying={isPlaying} currentSong={currentSong} />
+        <Player
+          audioRef={audioRef}
+          setIsPlaying={setIsPlaying}
+          currentSong={currentSong}
+          isPlaying={isPlaying}
+          songInfo={songInfo}
+          setSongInfo={setSongInfo}
+          songs={songs}
+          setSongs={setSongs}
+          setCurrentSong={setCurrentSong}
+        />
+      </div>
       <Library
         songs={songs}
-        setCurrentSong={setCurrentSong}
-        audioRef={audioRef}
-        setIsPlaying={setIsPlaying}
-        setSongs={setSongs}
         libraryStatus={libraryStatus}
+        songSelectHandler={songSelectHandler}
       />
       <audio
         onLoadedMetadata={timeUpdateHandler}

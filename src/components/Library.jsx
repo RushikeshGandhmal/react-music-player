@@ -2,32 +2,35 @@
 
 import LibrarySong from "./LibrarySong";
 
-const Library = ({
-  songs,
-  setCurrentSong,
-  audioRef,
-  setIsPlaying,
-  setSongs,
-  libraryStatus,
-}) => {
+const Library = ({ songs, libraryStatus, songSelectHandler }) => {
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData("text/plain", e.target.id);
+  };
+
   return (
     <div className={`library ${libraryStatus ? "active-library" : " "}`}>
       <h2>Library</h2>
       <div className="library-songs">
         {songs.map((song) => (
-          <LibrarySong
-            songs={songs}
-            cover={song.cover}
-            name={song.name}
-            artist={song.artist}
-            active={song.active}
+          <div
             key={song.id}
             id={song.id}
-            setCurrentSong={setCurrentSong}
-            audioRef={audioRef}
-            setIsPlaying={setIsPlaying}
-            setSongs={setSongs}
-          />
+            draggable="true"
+            onDragStart={handleDragStart}
+            style={{
+              color: "white",
+              cursor: "grab",
+            }}
+          >
+            <LibrarySong
+              cover={song.cover}
+              name={song.name}
+              artist={song.artist}
+              active={song.active}
+              id={song.id}
+              songSelectHandler={songSelectHandler}
+            />
+          </div>
         ))}
       </div>
     </div>
