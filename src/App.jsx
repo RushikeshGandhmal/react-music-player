@@ -9,6 +9,7 @@ import Song from "./components/Song";
 import chillhop from "./data";
 //Util
 import { playAudio } from "./util";
+import AudioMixer from "./components/AudioMixer";
 
 function App() {
   //Ref
@@ -24,6 +25,12 @@ function App() {
     volume: 0,
   });
   const [libraryStatus, setLibraryStatus] = useState(false);
+
+  const columnStyle = {
+    display: "grid",
+    gridTemplateColumns: `repeat(${currentSong.length}, 1fr)`,
+    gap: "20px", // Adjust space between columns
+  };
 
   const timeUpdateHandler = (e) => {
     const current = e.target.currentTime;
@@ -87,34 +94,67 @@ function App() {
   };
 
   return (
-    <div className={`App ${libraryStatus ? "library-active" : ""}`}>
-      <Nav libraryStatus={libraryStatus} setLibraryStatus={setLibraryStatus} />
-      <div id="dropzone" onDrop={handleDrop} onDragOver={handleDragOver}>
-        <Song isPlaying={isPlaying} currentSong={currentSong[0]} />
-        <Player
-          audioRef={audioRef}
-          setIsPlaying={setIsPlaying}
-          currentSong={currentSong[0]}
-          isPlaying={isPlaying}
-          songInfo={songInfo}
-          setSongInfo={setSongInfo}
-        />
-      </div>
-      <Library
-        songs={songs}
-        libraryStatus={libraryStatus}
-        songSelectHandler={songSelectHandler}
-      />
-      <audio
-        key={currentSong[0].id}
-        onLoadedMetadata={timeUpdateHandler}
-        onTimeUpdate={timeUpdateHandler}
-        ref={audioRef}
-        src={currentSong[0].audio}
-        onEnded={songEndHandler}
-      ></audio>
-    </div>
+    <AudioMixer
+      songs={[
+        "https://cambdemo.vercel.app/resources/guitar.wav",
+        "https://cambdemo.vercel.app/resources/trumpet.wav",
+      ]}
+      play={true}
+      pause={false}
+    />
   );
+
+  // return (
+  //   <div>
+  //     <div className={`App ${libraryStatus ? "library-active" : ""}`}>
+  //       <Nav
+  //         libraryStatus={libraryStatus}
+  //         setLibraryStatus={setLibraryStatus}
+  //       />
+  //       <div
+  //         id="dropzone"
+  //         onDrop={handleDrop}
+  //         onDragOver={handleDragOver}
+  //         style={columnStyle}
+  //       >
+  //         {currentSong.map((song) => {
+  //           return (
+  //             <>
+  //               <Song isPlaying={isPlaying} currentSong={song} />
+  //             </>
+  //           );
+  //         })}
+  //       </div>
+  //       <div id="dropzone" onDrop={handleDrop} onDragOver={handleDragOver}>
+  //         <Player
+  //           audioRef={audioRef}
+  //           setIsPlaying={setIsPlaying}
+  //           currentSong={currentSong[0]}
+  //           isPlaying={isPlaying}
+  //           songInfo={songInfo}
+  //           setSongInfo={setSongInfo}
+  //         />
+  //       </div>
+  //       <Library
+  //         songs={songs}
+  //         libraryStatus={libraryStatus}
+  //         songSelectHandler={songSelectHandler}
+  //       />
+  //       {currentSong.map((song) => {
+  //         return (
+  //           <audio
+  //             key={song.id}
+  //             onLoadedMetadata={timeUpdateHandler}
+  //             onTimeUpdate={timeUpdateHandler}
+  //             ref={audioRef}
+  //             src={song.audio}
+  //             onEnded={songEndHandler}
+  //           ></audio>
+  //         );
+  //       })}
+  //     </div>
+  //   </div>
+  // );
 }
 
 export default App;
