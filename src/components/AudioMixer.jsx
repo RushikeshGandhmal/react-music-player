@@ -3,30 +3,51 @@ import { useEffect } from "react";
 import useStateTrack from "./useStateTrack";
 
 const AudioMixer = ({ songs, play, pause }) => {
-  const tracks = useStateTrack(songs);
+  const { tracks, playTrack, pauseTrack } = useStateTrack(songs);
+
+  //   console.log("ccc", tracks, playTrack, pauseTrack);
 
   const handlePlay = () => {
-    tracks?.forEach((track) => {
-      track.source.start();
+    tracks?.forEach((track, index) => {
+      //   track.source.start();
+      playTrack(index);
     });
   };
 
   const handlePause = () => {
-    tracks?.forEach((track) => {
-      track.source.pause();
+    tracks?.forEach((track, index) => {
+      //   track.source.stop();
+      pauseTrack(index);
     });
   };
 
   useEffect(() => {
     if (play && !pause) {
       // Play the all audio tracks
-      handlePlay();
+      //   handlePlay();
     } else if (!play && pause) {
       // Pause all tracks
-      handlePause();
+      //   handlePause();
     }
   }, [play, pause, tracks]);
-  return <div>AudioMixer</div>;
+  return (
+    <>
+      <button
+        onClick={() => {
+          handlePlay();
+        }}
+      >
+        Play
+      </button>{" "}
+      <button
+        onClick={() => {
+          handlePause();
+        }}
+      >
+        Pause
+      </button>{" "}
+    </>
+  );
 };
 
 export default AudioMixer;
