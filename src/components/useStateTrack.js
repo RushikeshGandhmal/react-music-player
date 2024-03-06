@@ -8,6 +8,7 @@ const useStateTrack = (songUrls) => {
   const [seconds, setSeconds] = useState(0);
   // State to control the timer start/pause
   const [isActive, setIsActive] = useState(false);
+  const [songVolume, setSongVolume] = useState(1);
 
   // Function to load audio file
   async function loadAudioFile(url) {
@@ -36,7 +37,7 @@ const useStateTrack = (songUrls) => {
   useEffect(() => {
     const setupTracks = async () => {
       const tracksData = await Promise.all(
-        songUrls.map((url) => createTrack(url))
+        songUrls.map((url) => createTrack(url.audio))
       );
       setTracks(tracksData);
     };
@@ -49,7 +50,10 @@ const useStateTrack = (songUrls) => {
 
     // If the timer is active, set up an interval to increment the seconds
     if (isActive) {
-      if (seconds > 30) setIsActive(false);
+      if (seconds > 29) {
+        setIsActive(false);
+        setSeconds(0);
+      }
       interval = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
@@ -102,7 +106,55 @@ const useStateTrack = (songUrls) => {
     setTracks([...tracks.slice(0, index), track, ...tracks.slice(index + 1)]);
   }
 
-  return { tracks, playTrack, pauseTrack };
+  const setVolume = (volume) => {
+    // Ensure the volume is within the valid range [0, 1]
+    setSongVolume(volume);
+    const clampedVolume = Math.min(Math.max(volume, 0), 1);
+    tracks.forEach((track) => {
+      track.gainNode.gain.value = clampedVolume;
+    });
+  };
+
+  function playSeekTrack(index, position = 0) {
+    setIsActive(true);
+    const track = tracks[index];
+    if (track.playing) {
+      track.source.stop(); // Stop current if playing to handle re-play from new position
+      track.playing = false; // Ensure correct state before re-initiating
+    }
+
+    const source = audioContext.createBufferSource();
+    source.buffer = track.audioBuffer;
+    source.connect(track.gainNode).connect(audioContext.destination);
+    track.gainNode.gain.value = songVolume;
+
+    source.start(0, position);
+    track.source = source;
+    track.playing = true;
+    track.startTime = audioContext.currentTime - position;
+    track.pauseTime = position; // Set or reset pauseTime to the new position
+
+    setTracks([...tracks.slice(0, index), track, ...tracks.slice(index + 1)]);
+  }
+
+  const seekToPosition = (position) => {
+    tracks.forEach((track, index) => {
+      if (track.audioBuffer.duration > position) {
+        playSeekTrack(index, position);
+      }
+    });
+  };
+
+  return {
+    isActive,
+    tracks,
+    playTrack,
+    pauseTrack,
+    seconds,
+    setVolume,
+    songVolume,
+    seekToPosition,
+  };
 };
 
 export default useStateTrack;

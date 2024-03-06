@@ -9,72 +9,67 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const Player = ({
-  isPlaying,
-  setIsPlaying,
-  audioRef,
-  songInfo,
-  setSongInfo,
-  currentSong,
+  isActive,
+  currentTime,
+  handlePlay,
+  handlePause,
+  setVolume,
+  songVolume,
+  seekToPosition,
 }) => {
   const [activeVolume, setActiveVolume] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const trackAnim = {
-    transform: `translateX(${songInfo.animationPercentage}%)`,
+    transform: `translateX(${currentTime}%)`,
   };
-  //Event Handlers
-  function getTime(time) {
-    return (
-      Math.floor(time / 60) + ":" + ("0" + Math.floor(time % 60)).slice(-2)
-    );
-  }
+
   const dragHandler = (e) => {
-    audioRef.current.currentTime = e.target.value;
-    setSongInfo({ ...songInfo, currentTime: e.target.value });
+    console.log("currentTime", currentTime, e.target.value);
+    seekToPosition(e.target.value);
   };
 
   const playSongHandler = () => {
     if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(!isPlaying);
+      setIsPlaying(false);
+      handlePause();
     } else {
-      audioRef.current.play();
-      setIsPlaying(!isPlaying);
+      setIsPlaying(true);
+      handlePlay();
     }
   };
 
   const changeVolume = (e) => {
-    let value = e.target.value;
-    audioRef.current.volume = value;
-    setSongInfo({ ...songInfo, volume: value });
+    setVolume(e.target.value);
   };
 
   return (
     <div className="player">
       <div className="time-control">
-        <p>{getTime(songInfo.currentTime)}</p>
+        <p>{currentTime}</p>
         <div
           style={{
-            background: `linear-gradient(to right, ${currentSong.color[0]},${currentSong.color[1]})`,
+            background: `linear-gradient(to right, #2ab3bf, black)`,
           }}
           className="track"
         >
           <input
-            value={songInfo.currentTime}
+            value={currentTime}
             type="range"
-            max={songInfo.duration || 0}
+            max={30}
             min={0}
             onChange={dragHandler}
           />
           <div style={trackAnim} className="animate-track"></div>
         </div>
-        <p>{songInfo.duration ? getTime(songInfo.duration) : "0:00"}</p>
+        <p>{"30:00"}</p>
       </div>
       <div className="play-control">
         <FontAwesomeIcon
           onClick={playSongHandler}
           className="play"
           size="2x"
-          icon={isPlaying ? faPause : faPlay}
+          icon={isActive ? faPause : faPlay}
         />
         <FontAwesomeIcon
           onClick={() => setActiveVolume(!activeVolume)}
@@ -83,7 +78,7 @@ const Player = ({
         {activeVolume && (
           <input
             onChange={changeVolume}
-            value={songInfo.volume}
+            value={songVolume}
             max="1"
             min="0"
             step="0.01"
