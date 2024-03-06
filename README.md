@@ -37,9 +37,9 @@ After starting the development server, open your web browser and go to `http://l
 
 ## Contributing
 
-Contributions are welcome! Please refer to our contribution guidelines for more information on how to propose bug fixes, features, and improvements.
+Contributions are welcome!
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is not licensed.
 
