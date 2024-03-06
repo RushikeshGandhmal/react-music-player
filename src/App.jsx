@@ -21,7 +21,7 @@ function App() {
 
     //Set Active in library
     const newSongs = songs.map((song) => {
-      if (song.id === id) {
+      if (song.id === id || song.active) {
         return {
           ...song,
           active: true,
