@@ -1,12 +1,12 @@
 import { useState } from "react";
 import "./styles/app.scss";
 //Import Components
-import Library from "./components/Library";
+import Library from "./components/Library/Library";
 import Nav from "./components/Nav";
 //Import data
 import chillhop from "./data";
 //Util
-import AudioMixer from "./components/AudioMixer";
+import AudioMixer from "./components/Player/AudioMixer";
 
 function App() {
   const [songs, setSongs] = useState(chillhop());

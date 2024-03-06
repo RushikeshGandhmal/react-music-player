@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import Player from "./Player";
-import Song from "./Song";
-import useStateTrack from "./useStateTrack";
+import Song from "../Song";
+import useStateTrack from "../../hooks/useStateTrack";
 
 const AudioMixer = ({ songs, songSelectHandler }) => {
   const {
