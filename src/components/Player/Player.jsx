@@ -21,7 +21,7 @@ const Player = ({
   const [isPlaying, setIsPlaying] = useState(false);
 
   const trackAnim = {
-    transform: `translateX(${currentTime}%)`,
+    transform: `translateX(${currentTime * 3.4}%)`,
   };
 
   const dragHandler = (e) => {
